@@ -15,11 +15,6 @@ const (
 
 type Option func(*Client)
 
-func SetHTTPClient(httpClient *http.Client) Option {
-	return func(cli *Client) {
-		cli.httpClient = httpClient
-	}
-}
 
 type Client struct {
 	key, secret string
@@ -52,6 +47,7 @@ func (cli *Client) GetUsers() ([]User, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to build request")
 	}
+
 	req.Header.Set("Key", cli.key)
 	req.Header.Set("Secret", cli.secret)
 
@@ -59,6 +55,7 @@ func (cli *Client) GetUsers() ([]User, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "request failed")
 	}
+	defer resp.Body.Close()
 
 	res := struct {
 		Users []User `json:""`
